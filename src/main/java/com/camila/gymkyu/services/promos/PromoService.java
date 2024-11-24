@@ -1,22 +1,29 @@
 package com.camila.gymkyu.services.promos;
 
 import com.camila.gymkyu.config.ApiResponse;
+import com.camila.gymkyu.models.membresias.Membresia;
+import com.camila.gymkyu.models.membresias.MembresiaRepo;
 import com.camila.gymkyu.models.promos.PromoRepo;
 import com.camila.gymkyu.models.promos.Promos;
+import com.camila.gymkyu.models.suscripcion.Suscripcion;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 @Transactional
 public class PromoService {
     private final PromoRepo promoRepo;
-
-    public PromoService(PromoRepo promoRepo) {
+    private final MembresiaRepo membresiaRepo;
+    public PromoService(PromoRepo promoRepo, MembresiaRepo membresiaRepo) {
         this.promoRepo = promoRepo;
+        this.membresiaRepo = membresiaRepo;
     }
 
     @Transactional(readOnly = true)
@@ -48,6 +55,12 @@ public class PromoService {
 
     @Transactional(rollbackFor = {Exception.class})
     public ResponseEntity<ApiResponse> save(Promos promo){
+        Optional<Membresia> foundMembresia = membresiaRepo.findById(promo.getMembresia().get(0).getId());
+        promo.setStatus(true);
+        if (foundMembresia.isEmpty())
+            return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST, true, "Membresia No Encontrada"), HttpStatus.BAD_REQUEST);
+        foundMembresia.get().getPromos().add(promo);
+        membresiaRepo.saveAndFlush(foundMembresia.get());
         return new ResponseEntity<>(new ApiResponse(promoRepo.save(promo), HttpStatus.OK), HttpStatus.OK);
     }
 
@@ -59,5 +72,17 @@ public class PromoService {
         Promos promo = foundPromo.get();
         promo.setStatus(!promo.getStatus());
         return new ResponseEntity<>(new ApiResponse(promoRepo.save(promo), HttpStatus.OK), HttpStatus.OK);
+    }
+
+
+    @Scheduled(cron = "0 0 0 * * ?") // Ejecuta cada día a medianoche
+    @Transactional
+    public void desactivarSuscripcionesVencidas() {
+        List<Promos> promosVencidas = promoRepo.findByFechaFin(LocalDateTime.now());
+        for (Promos promos : promosVencidas) {
+            promos.setStatus(false);
+            promoRepo.saveAndFlush(promos);
+        }
+        System.out.println("Suscripciones vencidas desactivadas");
     }
 }

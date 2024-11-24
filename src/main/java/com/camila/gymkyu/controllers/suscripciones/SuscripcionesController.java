@@ -12,31 +12,36 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = {"*"})
 @RequiredArgsConstructor
 public class SuscripcionesController {
-    private final SuscripcionService suscripcionService;
+    private final SuscripcionService service;
 
     @GetMapping("/user/{id}")
     public ResponseEntity<ApiResponse> findByUser(@PathVariable Long id){
-        return suscripcionService.findByUser(id);
+        return service.findByUser(id);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse> findById(@PathVariable Long id){
-        return suscripcionService.findById(id);
+        return service.findById(id);
+    }
+
+    @GetMapping("/ganancias/")
+    public ResponseEntity<ApiResponse> findGanacias(){
+        return service.allPrecios();
     }
 
     @PostMapping("/")
     public ResponseEntity<ApiResponse> nuevaSuscripcion(@RequestBody SuscripcionesDto suscripcion){
-        return suscripcionService.nuevaSuscripcion(suscripcion.toEntity());
+        return service.nuevaSuscripcion(suscripcion.toEntity());
     }
 
     @GetMapping("/")
     public ResponseEntity<ApiResponse> findAll(){
-        return suscripcionService.findAll();
+        return service.findAll();
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<ApiResponse> changeStatus(@PathVariable Long id){
-        return suscripcionService.changeStatus(id);
+        return service.changeStatus(id);
     }
 
 }

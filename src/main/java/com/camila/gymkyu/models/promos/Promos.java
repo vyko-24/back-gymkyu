@@ -46,8 +46,8 @@ public class Promos {
     @Column(columnDefinition = "BOOL DEFAULT true")
     private Boolean status;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "promos", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @JsonIgnoreProperties(value = {"promos", "usuariosSuscritos"})
+    @ManyToMany(mappedBy = "promos", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<Membresia> membresia;
 
     public Promos(Long id, String nombre, String descripcion, String imagen, Integer porcentaje, LocalDateTime fechaInicio, LocalDateTime fechaFin, Boolean status, List<Membresia> membresia) {

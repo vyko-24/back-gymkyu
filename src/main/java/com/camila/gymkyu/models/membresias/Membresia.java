@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -34,15 +35,19 @@ public class Membresia {
     @JsonIgnoreProperties(value = {"membresia"})
     private Set<Suscripcion> usuariosSuscritos;
 
-    @ManyToOne
-    @JoinColumn(name = "promos")
-    @JsonIgnoreProperties(value = {"membresia"})
-    private Promos promos;
+    @ManyToMany
+    @JoinTable(
+            name = "membresia_promos",
+            joinColumns = @JoinColumn(name = "membresia_id"),
+            inverseJoinColumns = @JoinColumn(name = "promo_id")
+    )
+    @JsonIgnoreProperties(value= {"membresia"})
+    private List<Promos> promos = new ArrayList<>();
 
     @Column(columnDefinition = "BOOL DEFAULT true")
     private Boolean status;
 
-    public Membresia(Long id, String nombre, String descripcion, Double precio, Promos promos, Boolean status) {
+    public Membresia(Long id, String nombre, String descripcion, Double precio, List<Promos> promos, Boolean status) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -51,7 +56,7 @@ public class Membresia {
         this.status = status;
     }
 
-    public Membresia(String nombre, String descripcion, Double precio, Promos promos, Boolean status) {
+    public Membresia(String nombre, String descripcion, Double precio, List<Promos> promos, Boolean status) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.precio = precio;

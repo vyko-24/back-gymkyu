@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @NoArgsConstructor
 @Getter
 @Setter
@@ -18,10 +20,10 @@ public class MembresiaDto {
     private String nombre;
     private String descripcion;
     private Double precio;
-    private Promos promos;
+    private List<Promos> promos;
     private Boolean status;
 
-    public MembresiaDto(Long id, String nombre, String descripcion, Double precio, Promos promos, Boolean status) {
+    public MembresiaDto(Long id, String nombre, String descripcion, Double precio, List<Promos> promos, Boolean status) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -30,7 +32,7 @@ public class MembresiaDto {
         this.status = status;
     }
 
-    public MembresiaDto(String nombre, String descripcion, Double precio, Promos promos, Boolean status) {
+    public MembresiaDto(String nombre, String descripcion, Double precio, List<Promos> promos, Boolean status) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.precio = precio;

@@ -1,6 +1,7 @@
 package com.camila.gymkyu.models.clases;
 
 import com.camila.gymkyu.models.usuarios.Usuario;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -46,6 +47,7 @@ public class Clases {
             joinColumns = @JoinColumn(name = "clase_id"),
             inverseJoinColumns = @JoinColumn(name = "usuario_id")
     )
+    @JsonIgnoreProperties(value = {"clases","suscripciones","contrasena","foto","role"})
     private Set<Usuario> participantes = new HashSet<>();
 
     public Clases(String nombre, String descripcion, String foto, Boolean status, Set<Usuario> participantes) {

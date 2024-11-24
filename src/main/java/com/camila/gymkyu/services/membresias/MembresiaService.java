@@ -5,11 +5,13 @@ import com.camila.gymkyu.controllers.membresias.dto.MembresiaDto;
 import com.camila.gymkyu.models.membresias.Membresia;
 import com.camila.gymkyu.models.membresias.MembresiaRepo;
 import com.camila.gymkyu.models.promos.PromoRepo;
+import com.camila.gymkyu.models.promos.Promos;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,18 +29,29 @@ public class MembresiaService {
     @Transactional(readOnly = true)
     public ResponseEntity<ApiResponse> findAll() {
         List<Membresia> membresias = membresiaRepo.findAll();
+
         List<MembresiaDto> membresiaDtos = membresias.stream().map(membresia -> {
             double precioFinal = membresia.getPrecio();
-            if (membresia.getPromos() != null) {
-                double descuento = membresia.getPromos().getPorcentaje();
-                precioFinal -= precioFinal * descuento;  // Aplica el descuento directamente
+
+            // Filtrar promociones activas
+            if (membresia.getPromos() != null && !membresia.getPromos().isEmpty()) {
+                List<Promos> promosActivas = membresia.getPromos().stream()
+                        .filter(Promos::getStatus) // Promoción activa según status
+                        .collect(Collectors.toList());
+
+                // Aplicar los descuentos de las promociones activas
+                for (Promos promo : promosActivas) {
+                    double descuento = promo.getPorcentaje(); // Porcentaje de descuento
+                    precioFinal -= precioFinal * (descuento / 100);
+                }
             }
+
             return new MembresiaDto(
                     membresia.getId(),
                     membresia.getNombre(),
                     membresia.getDescripcion(),
                     precioFinal,
-                    membresia.getPromos(),
+                    membresia.getPromos(), // Incluye todas las promociones asociadas
                     membresia.getStatus()
             );
         }).collect(Collectors.toList());

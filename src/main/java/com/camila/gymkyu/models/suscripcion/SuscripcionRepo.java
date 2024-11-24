@@ -12,4 +12,5 @@ import java.util.Optional;
 public interface SuscripcionRepo extends JpaRepository<Suscripcion, Long> {
     Optional<Suscripcion> findByUsuario(Usuario usuario);
     List<Suscripcion> findByFechaFin(LocalDateTime fechaFin);
+    List<Suscripcion> findByStatus(Boolean status);
 }

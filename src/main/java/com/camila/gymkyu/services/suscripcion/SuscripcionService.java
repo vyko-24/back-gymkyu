@@ -1,6 +1,7 @@
 package com.camila.gymkyu.services.suscripcion;
 
 import com.camila.gymkyu.config.ApiResponse;
+import com.camila.gymkyu.controllers.suscripciones.SuscripcionesDto;
 import com.camila.gymkyu.models.membresias.Membresia;
 import com.camila.gymkyu.models.membresias.MembresiaRepo;
 import com.camila.gymkyu.models.suscripcion.Suscripcion;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -56,6 +58,16 @@ public class SuscripcionService {
     }
 
     @Transactional(readOnly = true)
+    public ResponseEntity<ApiResponse> allPrecios(){
+        List<Suscripcion> suscripciones = repository.findAll();
+        List<SuscripcionesDto> suscripcionesDtos = suscripciones.stream()
+                .map(s -> new SuscripcionesDto(s.getFechaInicio(), s.getPrecio()))
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(new ApiResponse(suscripcionesDtos, HttpStatus.OK), HttpStatus.OK);
+    }
+
+
+    @Transactional(readOnly = true)
     public ResponseEntity<ApiResponse> findById(Long id){
         Optional<Suscripcion> foundSuscripcion = repository.findById(id);
         if(foundSuscripcion.isEmpty())
@@ -75,7 +87,7 @@ public class SuscripcionService {
 
     @Scheduled(cron = "0 0 0 * * ?") // Ejecuta cada día a medianoche
     @Transactional
-    public void desactivarSuscripcionesVencidas() {
+    public void desactivarPromosVencidas() {
         List<Suscripcion> suscripcionesVencidas = repository.findByFechaFin(LocalDateTime.now());
         for (Suscripcion suscripcion : suscripcionesVencidas) {
             suscripcion.setStatus(false);

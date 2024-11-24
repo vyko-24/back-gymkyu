@@ -68,7 +68,7 @@ public class Usuario {
     @ManyToMany(mappedBy = "participantes", cascade = CascadeType.MERGE)
     private Set<Clases> clases;
 
-    @JsonIgnoreProperties(value = {"usuario"})
+    @JsonIgnoreProperties(value = {"usuario","promos"})
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     private Set<Suscripcion> suscripciones;
 

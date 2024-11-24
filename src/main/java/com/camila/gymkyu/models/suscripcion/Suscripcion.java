@@ -22,12 +22,12 @@ public class Suscripcion {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
-    @JsonIgnoreProperties(value = {"suscripcion"})
+    @JsonIgnoreProperties(value = {"suscripcion","contrasena","foto","clases","suscripciones"})
     private Usuario usuario;
 
     @ManyToOne
     @JoinColumn(name = "membresia_id", nullable = false)
-    @JsonIgnoreProperties(value = {"usuariosSuscritos"})
+    @JsonIgnoreProperties(value = {"usuariosSuscritos","promos"})
     private Membresia membresia;
 
     @Column(columnDefinition = "TIMESTAMP DEFAULT NOW()", insertable = false)
@@ -38,6 +38,9 @@ public class Suscripcion {
 
     @Column(columnDefinition = "BOOLEAN DEFAULT TRUE")
     private Boolean status;
+
+    @Column(columnDefinition = "DOUBLE DEFAULT 0")
+    private Double precio;
 
     public Suscripcion(Long id, Usuario usuario, Membresia membresia, LocalDateTime fechaInicio, LocalDateTime fechaFin, Boolean status) {
         this.id = id;
@@ -69,5 +72,24 @@ public class Suscripcion {
         this.membresia = membresia;
         this.fechaInicio = fechaInicio;
         this.fechaFin = fechaFin;
+    }
+
+    public Suscripcion(Usuario usuario, Membresia membresia, LocalDateTime fechaInicio, LocalDateTime fechaFin, Boolean status, Double precio) {
+        this.usuario = usuario;
+        this.membresia = membresia;
+        this.fechaInicio = fechaInicio;
+        this.fechaFin = fechaFin;
+        this.status = status;
+        this.precio = precio;
+    }
+
+    public Suscripcion(Long id, Usuario usuario, Membresia membresia, LocalDateTime fechaInicio, LocalDateTime fechaFin, Boolean status, Double precio) {
+        this.id = id;
+        this.usuario = usuario;
+        this.membresia = membresia;
+        this.fechaInicio = fechaInicio;
+        this.fechaFin = fechaFin;
+        this.status = status;
+        this.precio = precio;
     }
 }

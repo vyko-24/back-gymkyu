@@ -23,8 +23,13 @@ public class SuscripcionesDto {
     private Membresia membresia;
     private LocalDateTime fechaInicio;
     private LocalDateTime fechaFin;
+    private Boolean status;
+    private Double precio;
 
-    public Suscripcion toEntity(){
-        return new Suscripcion(usuario, membresia, fechaInicio, fechaFin);
+    public SuscripcionesDto(LocalDateTime fechaInicio, Double precio) {
+        this.fechaInicio = fechaInicio;
+        this.precio = precio;
     }
+
+    public Suscripcion toEntity(){return new Suscripcion(usuario, membresia, fechaInicio, fechaFin, status, precio);}
 }
