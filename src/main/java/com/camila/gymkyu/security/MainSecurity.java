@@ -28,7 +28,9 @@ public class MainSecurity {
     private final String[] WHITE_LIST = {
             "/gymkyu/auth/**",
             "/gymkyu/membresia/**",
-            "/gymkyu/clase/**"
+            "/gymkyu/clase/**",
+            "/gymkyu/promo/**",
+            "/gymkyu/suscripcion/**"
     };
 
     private final UserDetailsServiceImpl service;
