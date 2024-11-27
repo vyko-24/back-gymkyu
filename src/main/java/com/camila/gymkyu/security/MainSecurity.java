@@ -26,7 +26,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class MainSecurity {
     private final String[] WHITE_LIST = {
-            "/gymkyu/auth/**"
+            "/gymkyu/auth/**",
+            "/gymkyu/membresia/**",
+            "/gymkyu/clase/**"
     };
 
     private final UserDetailsServiceImpl service;
@@ -61,7 +63,7 @@ public class MainSecurity {
         http.cors(Customizer.withDefaults()).csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(WHITE_LIST).permitAll()
-                                .requestMatchers("/saludable/user/**").hasAuthority("ADMIN_ROLE")
+                                .requestMatchers("/gymkyu/usuario/**").hasAuthority("ADMIN")
                                 .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults())
@@ -69,7 +71,7 @@ public class MainSecurity {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(filter(), UsernamePasswordAuthenticationFilter.class)
-                .logout(out -> out.logoutUrl("/saludable/auth/logout").clearAuthentication(true));
+                .logout(out -> out.logoutUrl("/gymkyu/auth/logout").clearAuthentication(true));
         return http.build();
     }
 }
