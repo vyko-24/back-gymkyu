@@ -57,6 +57,8 @@ public class InitialConfig implements CommandLineRunner {
         Clases clase2 = getOrSaveClase(new Clases("Zumba", "Pos es zumba qué más", "aag", true));
         saveUserClases(userClliente.getId(), clase2.getId());
 
+        Clases clase3 = getOrSaveClase(new Clases("Spa", "Un spa para que el chango idiota del vale pueda trabajar", "aag", true));
+
         Membresia membresia1 = getOrSaveMembresia(new Membresia("Fit Express", "Membresia mensual", 500.0, true));
         Membresia membresia2 = getOrSaveMembresia(new Membresia("Six Pack", "Membresia mensual", 800.0, true));
 
@@ -70,6 +72,7 @@ public class InitialConfig implements CommandLineRunner {
         savePromoMembresias(promo3.getId(), membresia1.getId());
 
         Suscripcion suscripcion1 = getOrSaveSuscripcion(new Suscripcion(userClliente, membresia1, LocalDateTime.now(), LocalDateTime.now().plusMonths(2), true, 500.0));
+        Suscripcion suscripcion2 = getOrSaveSuscripcion(new Suscripcion(userClliente2, membresia2, LocalDateTime.now().minusMonths(1), LocalDateTime.now().plusMonths(1), true, 800.0));
 
     }
 
