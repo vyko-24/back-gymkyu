@@ -33,15 +33,13 @@ public class MembresiaService {
         List<MembresiaDto> membresiaDtos = membresias.stream().map(membresia -> {
             double precioFinal = membresia.getPrecio();
 
-            // Filtrar promociones activas
             if (membresia.getPromos() != null && !membresia.getPromos().isEmpty()) {
                 List<Promos> promosActivas = membresia.getPromos().stream()
-                        .filter(Promos::getStatus) // Promoción activa según status
+                        .filter(Promos::getStatus)
                         .collect(Collectors.toList());
 
-                // Aplicar los descuentos de las promociones activas
                 for (Promos promo : promosActivas) {
-                    double descuento = promo.getPorcentaje(); // Porcentaje de descuento
+                    double descuento = promo.getPorcentaje();
                     precioFinal -= precioFinal * (descuento / 100);
                 }
             }
@@ -50,6 +48,7 @@ public class MembresiaService {
                     membresia.getId(),
                     membresia.getNombre(),
                     membresia.getDescripcion(),
+                    membresia.getPrecio(),
                     precioFinal,
                     membresia.getPromos(), // Incluye todas las promociones asociadas
                     membresia.getStatus()

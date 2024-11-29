@@ -22,12 +22,14 @@ public class MembresiaDto {
     private Double precio;
     private List<Promos> promos;
     private Boolean status;
+    private Double precioOriginal;
 
-    public MembresiaDto(Long id, String nombre, String descripcion, Double precio, List<Promos> promos, Boolean status) {
+    public MembresiaDto(Long id, String nombre, String descripcion, Double precio, Double precioOriginal, List<Promos> promos, Boolean status) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.precio = precio;
+        this.precioOriginal = precioOriginal;
         this.promos = promos;
         this.status = status;
     }

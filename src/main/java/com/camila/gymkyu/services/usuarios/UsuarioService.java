@@ -130,6 +130,8 @@ public class UsuarioService {
         existingUser.setApMaterno(user.getApMaterno());
         existingUser.setApPaterno(user.getApPaterno());
         existingUser.setEmail(user.getEmail());
+        existingUser.setFoto(user.getFoto());
+        existingUser.setTelefono(user.getTelefono());
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         existingUser.setContrasena(encoder.encode(user.getContrasena()));
         existingUser.setRole(user.getRole());
