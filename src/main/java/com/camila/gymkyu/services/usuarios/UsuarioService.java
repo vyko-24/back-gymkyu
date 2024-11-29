@@ -1,10 +1,17 @@
 package com.camila.gymkyu.services.usuarios;
 
 import com.camila.gymkyu.config.ApiResponse;
+import com.camila.gymkyu.models.membresias.Membresia;
+import com.camila.gymkyu.models.membresias.MembresiaRepo;
+import com.camila.gymkyu.models.promos.PromoRepo;
+import com.camila.gymkyu.models.promos.Promos;
 import com.camila.gymkyu.models.roles.Rol;
 import com.camila.gymkyu.models.roles.RoleRepo;
+import com.camila.gymkyu.models.suscripcion.Suscripcion;
+import com.camila.gymkyu.models.suscripcion.SuscripcionRepo;
 import com.camila.gymkyu.models.usuarios.Usuario;
 import com.camila.gymkyu.models.usuarios.UsuarioRepository;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -12,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,10 +28,16 @@ import java.util.Optional;
 public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final RoleRepo roleRepo;
+    private final SuscripcionRepo suscripcionRepo;
+    private final MembresiaRepo membresiaRepo;
+    private final PromoRepo promoRepo;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, RoleRepo roleRepo) {
+    public UsuarioService(UsuarioRepository usuarioRepository, RoleRepo roleRepo, SuscripcionRepo suscripcionRepo, MembresiaRepo membresiaRepo, PromoRepo promoRepo) {
         this.usuarioRepository = usuarioRepository;
         this.roleRepo = roleRepo;
+        this.suscripcionRepo = suscripcionRepo;
+        this.membresiaRepo = membresiaRepo;
+        this.promoRepo = promoRepo;
     }
 
     @Transactional(readOnly = true)
@@ -68,6 +82,42 @@ public class UsuarioService {
         Usuario user = foundUser.get();
         user.setStatus(!user.getStatus());
         return new ResponseEntity<>(new ApiResponse(usuarioRepository.save(user), HttpStatus.OK), HttpStatus.OK);
+    }
+
+    @Transactional(rollbackFor = SQLException.class)
+    public ResponseEntity<ApiResponse> createUserSuscribed(Usuario user, Long memId, Boolean mes) {
+        Optional<Usuario> foundUser = usuarioRepository.findByEmail(user.getEmail());
+        if(foundUser.isPresent())
+            return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST, true, "Usuario ya existe"), HttpStatus.BAD_REQUEST);
+        Optional<Membresia> foundMembresia = membresiaRepo.findById(memId);
+        if(foundMembresia.isEmpty())
+            return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST, true, "Membresia No Encontrada"), HttpStatus.BAD_REQUEST);
+
+        Membresia membresia = foundMembresia.get();
+        Double precioFinal = membresia.getPrecio();
+        if (membresia.getPromos() != null && !membresia.getPromos().isEmpty()) {
+            for (Promos promo : membresia.getPromos()) {
+                    if (promo.getStatus()) {
+                        precioFinal -= (precioFinal * promo.getPorcentaje() / 100);
+                    }
+                }
+            }
+
+        Suscripcion suscripcion = new Suscripcion();
+        suscripcion.setUsuario(user);
+        suscripcion.setMembresia(membresia);
+        suscripcion.setPrecio(precioFinal);
+        suscripcion.setFechaInicio(LocalDate.now().atStartOfDay());
+        if(mes){
+            suscripcion.setFechaFin(LocalDate.now().plusMonths(1).atStartOfDay());
+        }else{
+            suscripcion.setFechaFin(LocalDate.now().plusYears(1).atStartOfDay());
+        }
+
+        usuarioRepository.save(user);
+        suscripcionRepo.save(suscripcion);
+        return new ResponseEntity<>(new ApiResponse(HttpStatus.CREATED, false, "Usuario creado y suscrito exitosamente"), HttpStatus.CREATED);
+
     }
 
     @Transactional(rollbackFor = SQLException.class)

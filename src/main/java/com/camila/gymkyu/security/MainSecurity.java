@@ -26,11 +26,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class MainSecurity {
     private final String[] WHITE_LIST = {
-            "/gymkyu/auth/**",
-            "/gymkyu/membresia/**",
-            "/gymkyu/clase/**",
-            "/gymkyu/promo/**",
-            "/gymkyu/suscripcion/**"
+            "/gymkyu/**",
     };
 
     private final UserDetailsServiceImpl service;

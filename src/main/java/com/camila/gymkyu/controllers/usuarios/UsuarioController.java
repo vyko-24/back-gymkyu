@@ -4,6 +4,7 @@ import com.camila.gymkyu.config.ApiResponse;
 import com.camila.gymkyu.controllers.usuarios.dto.UsuarioDto;
 import com.camila.gymkyu.services.usuarios.UsuarioService;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
@@ -29,6 +30,11 @@ public class UsuarioController {
     @PatchMapping("/status/{id}")
     public ResponseEntity<ApiResponse> changeStatus(@PathVariable("id") Long id){
         return service.changeUserStatus(id);
+    }
+
+    @PostMapping("/nuevo/{idMem}/{mes}")
+    public ResponseEntity<ApiResponse> saveUserSuscripcion(@RequestBody UsuarioDto dto , @PathVariable("id") Long id, @PathVariable("mes") Boolean mes){
+        return service.createUserSuscribed(dto.toEntity(), id, mes);
     }
 
     @PostMapping("/")

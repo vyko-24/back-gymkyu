@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Configuration
@@ -104,8 +105,12 @@ public class InitialConfig implements CommandLineRunner {
 
     @Transactional
     public Suscripcion getOrSaveSuscripcion(Suscripcion suscripcion) {
-        Optional<Suscripcion> foundSuscripcion = suscripcionRepo.findByUsuario(suscripcion.getUsuario());
-        return foundSuscripcion.orElseGet(() -> suscripcionRepo.saveAndFlush(suscripcion));
+        List<Suscripcion> foundSuscripciones = suscripcionRepo.findByUsuario(suscripcion.getUsuario());
+
+        if (foundSuscripciones.isEmpty()) {
+            return suscripcionRepo.saveAndFlush(suscripcion);
+        }
+        return foundSuscripciones.get(0);
     }
 
     @Transactional

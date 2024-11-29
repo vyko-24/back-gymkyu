@@ -80,7 +80,7 @@ public class SuscripcionService {
         Optional<Usuario> usuario = usuarioRepository.findById(id);
         if(usuario.isEmpty())
             return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST, true, "Usuario No Encontrado"), HttpStatus.BAD_REQUEST);
-        Optional<Suscripcion> foundSuscripcion = repository.findByUsuario(usuario.get());
+        List<Suscripcion> foundSuscripcion = repository.findByUsuario(usuario.get());
         return new ResponseEntity<>(new ApiResponse(repository.findByUsuario(usuario.get()), HttpStatus.OK), HttpStatus.OK);
     }
 

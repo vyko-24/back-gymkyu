@@ -5,11 +5,13 @@ import com.camila.gymkyu.services.roles.RoleService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/gymkyu/role")
+@CrossOrigin(origins = {"*"})
 public class RoleController {
     private final RoleService service;
 
