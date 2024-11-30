@@ -114,6 +114,10 @@ public class UsuarioService {
             suscripcion.setFechaFin(LocalDate.now().plusYears(1).atStartOfDay());
         }
 
+        user.setStatus(true);
+        user.setBlocked(true);
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        user.setContrasena(encoder.encode(user.getContrasena()));
         usuarioRepository.save(user);
         suscripcionRepo.save(suscripcion);
         return new ResponseEntity<>(new ApiResponse(HttpStatus.CREATED, false, "Usuario creado y suscrito exitosamente"), HttpStatus.CREATED);

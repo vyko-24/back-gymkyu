@@ -33,7 +33,7 @@ public class UsuarioController {
     }
 
     @PostMapping("/nuevo/{idMem}/{mes}")
-    public ResponseEntity<ApiResponse> saveUserSuscripcion(@RequestBody UsuarioDto dto , @PathVariable("id") Long id, @PathVariable("mes") Boolean mes){
+    public ResponseEntity<ApiResponse> saveUserSuscripcion(@RequestBody UsuarioDto dto , @PathVariable("idMem") Long id, @PathVariable("mes") Boolean mes){
         return service.createUserSuscribed(dto.toEntity(), id, mes);
     }
 
