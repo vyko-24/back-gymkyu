@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,18 +51,51 @@ public class PromoService {
         existingPromo.setPorcentaje(promo.getPorcentaje());
         existingPromo.setFechaInicio(promo.getFechaInicio());
         existingPromo.setFechaFin(promo.getFechaFin());
+        existingPromo.setImagen(promo.getImagen());
+
+        List<Membresia> membresias = new ArrayList<>();
+        for (Membresia membresia : promo.getMembresia()) {
+            Optional<Membresia> foundMembresia = membresiaRepo.findById(membresia.getId());
+            if (foundMembresia.isEmpty()) {
+                return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST, true,
+                        "Membresia no encontrada: " + membresia.getId()), HttpStatus.BAD_REQUEST);
+            }
+            membresias.add(foundMembresia.get());
+        }
+        existingPromo.setMembresia(membresias);
+
         return new ResponseEntity<>(new ApiResponse(promoRepo.save(existingPromo), HttpStatus.OK), HttpStatus.OK);
     }
 
     @Transactional(rollbackFor = {Exception.class})
     public ResponseEntity<ApiResponse> save(Promos promo){
-        Optional<Membresia> foundMembresia = membresiaRepo.findById(promo.getMembresia().get(0).getId());
+        // Asegurar que todas las membresías existen
+        List<Membresia> membresias = new ArrayList<>();
+        for (Membresia membresia : promo.getMembresia()) {
+            Optional<Membresia> foundMembresia = membresiaRepo.findById(membresia.getId());
+            if (foundMembresia.isEmpty()) {
+                return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST, true,
+                        "Membresia no encontrada: " + membresia.getId()), HttpStatus.BAD_REQUEST);
+            }
+            membresias.add(foundMembresia.get());
+        }
+
+        // Asociar las membresías con la promoción
+        promo.setMembresia(membresias);
         promo.setStatus(true);
-        if (foundMembresia.isEmpty())
-            return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST, true, "Membresia No Encontrada"), HttpStatus.BAD_REQUEST);
-        foundMembresia.get().getPromos().add(promo);
-        membresiaRepo.saveAndFlush(foundMembresia.get());
-        return new ResponseEntity<>(new ApiResponse(promoRepo.save(promo), HttpStatus.OK), HttpStatus.OK);
+
+        // Guardar la promoción
+        Promos savedPromo = promoRepo.save(promo);
+        savedPromo.setImagen(promo.getImagen());
+        savedPromo= promoRepo.save(savedPromo);
+
+        // Actualizar la relación en cada membresía
+        for (Membresia membresia : membresias) {
+            membresia.getPromos().add(savedPromo);
+            membresiaRepo.save(membresia);
+        }
+
+        return new ResponseEntity<>(new ApiResponse(savedPromo, HttpStatus.OK), HttpStatus.OK);
     }
 
     @Transactional(rollbackFor = {Exception.class})

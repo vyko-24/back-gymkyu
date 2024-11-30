@@ -80,6 +80,7 @@ public class ClaseService {
         Clases existingClase = foundClase.get();
         existingClase.setNombre(clase.getNombre());
         existingClase.setDescripcion(clase.getDescripcion());
+        existingClase.setFoto(clase.getFoto());
         return new ResponseEntity<>(new ApiResponse(claseRepo.save(existingClase), HttpStatus.OK), HttpStatus.OK);
     }
 

@@ -73,7 +73,7 @@ public class InitialConfig implements CommandLineRunner {
         savePromoMembresias(promo3.getId(), membresia1.getId());
 
         Suscripcion suscripcion1 = getOrSaveSuscripcion(new Suscripcion(userClliente, membresia1, LocalDateTime.now(), LocalDateTime.now().plusMonths(2), true, 500.0));
-        Suscripcion suscripcion2 = getOrSaveSuscripcion(new Suscripcion(userClliente2, membresia2, LocalDateTime.now().minusMonths(1), LocalDateTime.now().plusMonths(1), true, 800.0));
+        Suscripcion suscripcion2 = getOrSaveSuscripcion(new Suscripcion(userClliente2, membresia2, LocalDateTime.now().minusMonths(2), LocalDateTime.now().plusMonths(1), true, 800.0));
 
     }
 

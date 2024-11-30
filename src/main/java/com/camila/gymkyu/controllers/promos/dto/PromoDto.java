@@ -1,5 +1,6 @@
 package com.camila.gymkyu.controllers.promos.dto;
 
+import com.camila.gymkyu.models.membresias.Membresia;
 import com.camila.gymkyu.models.promos.Promos;
 import jakarta.persistence.Column;
 import jakarta.persistence.Lob;
@@ -11,6 +12,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @NoArgsConstructor
 @Getter
@@ -25,8 +27,9 @@ public class PromoDto {
     private LocalDateTime fechaInicio;
     private LocalDateTime fechaFin;
     private Boolean status;
+    private List<Membresia> membresia;
 
     public Promos toEntity(){
-        return new Promos(nombre, descripcion, imagen, porcentaje, fechaInicio, fechaFin, status);
+        return new Promos(nombre, descripcion, imagen, porcentaje, fechaInicio, fechaFin, status, membresia);
     }
 }
