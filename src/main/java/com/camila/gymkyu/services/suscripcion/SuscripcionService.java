@@ -8,13 +8,18 @@ import com.camila.gymkyu.models.suscripcion.Suscripcion;
 import com.camila.gymkyu.models.suscripcion.SuscripcionRepo;
 import com.camila.gymkyu.models.usuarios.Usuario;
 import com.camila.gymkyu.models.usuarios.UsuarioRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -64,6 +69,26 @@ public class SuscripcionService {
                 .map(s -> new SuscripcionesDto(s.getFechaInicio(), s.getPrecio()))
                 .collect(Collectors.toList());
         return new ResponseEntity<>(new ApiResponse(suscripcionesDtos, HttpStatus.OK), HttpStatus.OK);
+    }
+
+    @Transactional(readOnly = true)
+    public void generarCSV(HttpServletResponse response) throws IOException{
+        response.setContentType("text/csv");
+        response.setHeader("Content-Disposition", "attachment; filename=suscripciones.csv");
+
+        LocalDateTime fechaInicio = LocalDateTime.now().minusYears(2);
+
+        List<Suscripcion> suscripciones = repository.findSuscripcionesUltimosDosAnios(fechaInicio);
+
+        PrintWriter writer = response.getWriter();writer.println("Precio;Fecha"); // Usar punto y coma como separador
+        for (Suscripcion s : suscripciones) {
+            System.out.println("Precio: " + s.getPrecio());
+            System.out.println("Fecha de Inicio: " + s.getFechaInicio());
+
+
+            writer.printf("%.2f;%s%n", s.getPrecio(), s.getFechaInicio());
+        }
+        writer.flush();
     }
 
 
